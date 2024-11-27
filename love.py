@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
 
 # Load the Excel data
 data = pd.read_excel('love.xlsx', engine='openpyxl')
@@ -68,23 +66,12 @@ if influential_state:
     valid_pairs = valid_pairs[valid_pairs['Is_Consecutive']]
 
     # Prepare data for Multiple Linear Regression
-    features = ['Month', 'Year', influential_state]  # Include year as an additional feature
-    X = valid_pairs[features]
-    y = valid_pairs['Next_Month_Value']
+    X = valid_pairs[['Month', influential_state]]  # Features include Month and Influential State
+    y = valid_pairs['Next_Month_Value']            # Target is the Next Month Value
 
-    # Split data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    # Fit the model
+    # Fit the MLR model
     model = LinearRegression()
-    model.fit(X_train, y_train)
-
-    # Evaluate the model
-    y_pred = model.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
-
-    st.write(f"Model Performance: Mean Squared Error = {mse:.2f}, R-squared = {r2:.2f}")
+    model.fit(X, y)
 
     # Month selection and input for influential state
     month_mapping = {
@@ -93,17 +80,17 @@ if influential_state:
     }
     input_month = st.selectbox(f"Select the current month of {influential_state}:", list(month_mapping.keys()))
     month_num = month_mapping[input_month]
-    year_num = st.number_input("Enter the year for prediction:", min_value=2000, max_value=2100, step=1)
+
     random_value = st.number_input(f"Enter rainfall value for {influential_state} in {input_month}:", min_value=0.0)
 
     # Predict the next month's value for the target state
     if st.button("Predict Next Month's Rainfall"):
-        predicted_value = max(model.predict([[month_num, year_num, random_value]])[0], 0)
+        predicted_value = max(model.predict([[month_num, random_value]])[0], 0)
         next_month_num = (month_num % 12) + 1
         reverse_month_mapping = {v: k for k, v in month_mapping.items()}
         next_month = reverse_month_mapping[next_month_num]
 
         # Display the prediction
-        st.write(f"The predicted rainfall for {target_state} in {next_month} {year_num} is: {predicted_value:.2f} mm")
+        st.write(f"The predicted rainfall for {target_state} in {next_month} is: {predicted_value:.2f} mm")
 else:
     st.write("No influential state found for the selected target state. Please choose another state.")
