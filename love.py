@@ -17,7 +17,7 @@ state_pairs = {
     'Jharkhand': 'Bihar',
     'Bihar': 'Jharkhand',
     'West Bengal': 'Jharkhand',
-    'Nagaland': 'Andhra Pradesh',
+    'Nagaland': 'Arunachal Pradesh',
     'Sikkim': 'Arunachal Pradesh',
     'Assam & Meghalaya': 'Nagaland',
     'Andaman & Nicobar Islands': 'Tamil Nadu',
