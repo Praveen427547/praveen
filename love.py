@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 # Load the Excel data
 data = pd.read_excel('love.xlsx', engine='openpyxl')
@@ -65,12 +65,12 @@ if influential_state:
     )
     valid_pairs = valid_pairs[valid_pairs['Is_Consecutive']]
 
-    # Prepare data for Multiple Linear Regression
-    X = valid_pairs[['Month', influential_state]]  # Features include Month and Influential State
-    y = valid_pairs['Next_Month_Value']            # Target is the Next Month Value
+    # Prepare data for Random Forest
+    X = valid_pairs[['Month', influential_state]]
+    y = valid_pairs['Next_Month_Value']
 
-    # Fit the MLR model
-    model = LinearRegression()
+    # Fit the Random Forest model
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X, y)
 
     # Month selection and input for influential state
@@ -93,4 +93,5 @@ if influential_state:
         # Display the prediction
         st.write(f"The predicted rainfall for {target_state} in {next_month} is: {predicted_value:.2f} mm")
 else:
-    st.write("No influential state found for the selected target state. Please choose another state.")
+    st.write("No influential state found for the selected target state.")
+
